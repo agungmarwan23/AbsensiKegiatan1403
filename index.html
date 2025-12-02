@@ -112,16 +112,19 @@
 
 <script>
 let kegiatanDipilih = "";
-let lokasiUser = null;
 const targetLat = -0.321924;
 const targetLng = 103.1611923;
+let lokasiUser = null;
 
-function selectActivity(kegiatan) {
-    kegiatanDipilih = kegiatan;
-    document.getElementById('judulForm').innerText = "Form " + kegiatan;
-    document.getElementById('menu').style.display = 'none';
-    document.getElementById('formContainer').style.display = 'block';
+function selectActivity(activity) {
+    kegiatanDipilih = activity;
+
+    document.getElementById("judulForm").innerText = "Kegiatan: " + activity;
+
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("formContainer").style.display = "block";
 }
+
 
 function ambilLokasi() {
     if (!navigator.geolocation) {
@@ -130,33 +133,54 @@ function ambilLokasi() {
     }
 
     navigator.geolocation.getCurrentPosition(pos => {
+
         lokasiUser = {
             lat: pos.coords.latitude,
-            lng: pos.coords.longitude
+            lng: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
         };
 
         const jarak = hitungJarak(lokasiUser.lat, lokasiUser.lng, targetLat, targetLng);
+        lokasiUser.jarak = jarak; // simpan jarak
 
-        document.getElementById('lokasiInfo').innerText =`Lokasi diterima (Jarak: ${jarak.toFixed(3)} km)`;
-        lokasiUser.jarak = jarak;   // simpan agar bisa dikirim
+        if (jarak > 50) {
+            document.getElementById("lokasiInfo").innerText =
+            `Lokasi terlalu jauh (${jarak.toFixed(2)} km). Tidak bisa disimpan.`;
+
+            alert("Anda di luar jangkauan (lebih dari 5 km). Lokasi tidak akan dikirim.");
+            lokasiUser.valid = false;   // ❇ tandai tidak valid
+            return;
+        }
+
+        // Jika jarak valid, tampilkan OK
+        document.getElementById("lokasiInfo").innerText =
+            `Lokasi diterima (Jarak: ${jarak.toFixed(2)} km, Akurasi: ${pos.coords.accuracy} m)`;
 
     }, err => {
-        alert("Gagal mengambil lokasi");
+        alert("Gagal mengambil lokasi: " + err.message);
+    }, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
     });
 }
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2-lat1) * Math.PI/180;
-    const dLon = (lon2-lon1) * Math.PI/180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const R = 6371; // km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) *
+              Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function submitData() {
-    if (!lokasiUser) {
-        alert("Lokasi belum valid");
-        return;
+    if (!lokasiUser || lokasiUser.valid === false) {
+    alert("Lokasi terlalu jauh! Tidak bisa menyimpan data.");
+    return;
     }
 
     const nama = document.getElementById('nama').value;
