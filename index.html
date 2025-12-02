@@ -79,7 +79,7 @@
         <option>Baitul Jamhuri, SE</option>
         <option>Berkah Fajar, S.Si</option>
         <option>Budi Taufik</option>
-        <option>Desi Rizaldi</option>
+        <option>Dedi Rizaldi</option>
         <option>Eka Kusuma Wardani, SST</option>
         <option>Friska Aprilia Barus A.Md.T.</option>
         <option>Helen Fricylya Br Tobing S.Tr.Stat.</option>
@@ -141,18 +141,20 @@ function ambilLokasi() {
         };
 
         const jarak = hitungJarak(lokasiUser.lat, lokasiUser.lng, targetLat, targetLng);
-        lokasiUser.jarak = jarak; // simpan jarak
+        lokasiUser.jarak = jarak;
 
-        if (jarak > 50) {
+        // ❌ Jika jarak terlalu jauh (>5 km)
+        if (jarak > 5) {
+            lokasiUser.valid = false; // tandai TIDAK valid
             document.getElementById("lokasiInfo").innerText =
-            `Lokasi terlalu jauh (${jarak.toFixed(2)} km). Tidak bisa disimpan.`;
+                `Lokasi terlalu jauh (${jarak.toFixed(2)} km). Tidak bisa disimpan.`;
 
-            alert("Anda di luar jangkauan (lebih dari 5 km). Lokasi tidak akan dikirim.");
-            lokasiUser.valid = false;   // ❇ tandai tidak valid
+            alert("Anda di luar jangkauan (lebih dari 5 km). Tidak bisa mengisi daftar hadir.");
             return;
         }
 
-        // Jika jarak valid, tampilkan OK
+        // ✔ Jika jarak valid
+        lokasiUser.valid = true;
         document.getElementById("lokasiInfo").innerText =
             `Lokasi diterima (Jarak: ${jarak.toFixed(2)} km, Akurasi: ${pos.coords.accuracy} m)`;
 
@@ -164,6 +166,7 @@ function ambilLokasi() {
         maximumAge: 0
     });
 }
+
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
     const R = 6371; // km
@@ -178,19 +181,24 @@ function hitungJarak(lat1, lon1, lat2, lon2) {
 }
 
 function submitData() {
-    if (!lokasiUser || lokasiUser.valid === false) {
-    alert("Lokasi terlalu jauh! Tidak bisa menyimpan data.");
-    return;
+    if (!lokasiUser) {
+        alert("Ambil lokasi terlebih dahulu!");
+        return;
+    }
+
+    if (lokasiUser.valid !== true) {
+        alert("Lokasi tidak valid! Anda berada di luar radius 5 km.");
+        return;
     }
 
     const nama = document.getElementById('nama').value;
     const tanggal = document.getElementById('tanggal').value;
-    
+
     if (tanggal === "") {
-    alert("Tanggal wajib diisi!");
-    return;
+        alert("Tanggal wajib diisi!");
+        return;
     }
-       
+
     const waktuSubmit = new Date().toLocaleString();
 
     const data = {
@@ -202,7 +210,7 @@ function submitData() {
         Lokasi: `${lokasiUser.lat},${lokasiUser.lng}`
     };
 
-    fetch("https://script.google.com/macros/s/AKfycby7we99B1518W7w2ZWx9Pnm1CEECzLE7-1U1vErn15McDqLdUI6R434mpV9mFVDvcVd/exec", {  // ganti dengan URL Google Apps Script
+    fetch("https://script.google.com/macros/s/AKfycby7we99B1518W7w2ZWx9Pnm1CEECzLE7-1U1vErn15McDqLdUI6R434mpV9mFVDvcVd/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {"Content-Type": "application/json"},
@@ -212,6 +220,7 @@ function submitData() {
     alert("Data berhasil dikirim!");
     location.reload();
 }
+
 </script>
 </body>
 </html>
