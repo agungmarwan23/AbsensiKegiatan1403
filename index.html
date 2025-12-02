@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Hadir BPS Inhil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff7ef;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #ff8c42;
+            color: white;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ffd2b3;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background-color: #ff8c42;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e67a38;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        #error {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>DAFTAR HADIR KEGIATAN BPS KABUPATEN INDRAGIRI HILIR</header>
+
+    <div class="container" id="menu">
+        <button onclick="selectActivity('P3K')">P3K</button>
+        <button onclick="selectActivity('Upacara')">Upacara</button>
+        <button onclick="selectActivity('Rapat')">Rapat</button>
+    </div>
+
+    <div class="container" id="formContainer" style="display:none;">
+        <h3 id="judulForm"></h3>
+        <select id="nama">
+        <option value="">Pilih Pegawai</option>
+        <option>Zulyadi SST, MT</option>
+        <option>Adi Wijaya, SST</option>
+        <option>Agung Nugraha Marwan, S.Tr.Stat</option>
+        <option>Amy Fatmaya Hutami, S.Si</option>
+        <option>Anas Rulloh Budi Alamsyah, S.Tr.Stat</option>
+        <option>Annisa Fitriyani, S.Tr.Stat</option>
+        <option>Anto Beryandari S.P</option>
+        <option>Ari Mahendra, S.Tr.Stat</option>
+        <option>Baitul Jamhuri, SE</option>
+        <option>Berkah Fajar, S.Si</option>
+        <option>Budi Taufik</option>
+        <option>Desi Rizaldi</option>
+        <option>Eka Kusuma Wardani, SST</option>
+        <option>Friska Aprilia Barus A.Md.T.</option>
+        <option>Helen Fricylya Br Tobing S.Tr.Stat.</option>
+        <option>Hendra Sudirman, SE</option>
+        <option>Kamal Maulana Alfi S.Tr.Stat.</option>
+        <option>Mailiza, S.E</option>
+        <option>Mayliandra</option>
+        <option>Muhammad Mishbahi Nur Ihsan S.Tr.Stat.</option>
+        <option>Murniati S.Si.</option>
+        <option>Nata Lesmana</option>
+        <option>Nurmaliza</option>
+        <option>Riyhanza Agussalam, SE</option>
+        <option>Ryan Alfitra, SST</option>
+        <option>Sishilia Marestha, S.Tr.Stat</option>
+        <option>Theresia Alvionita Sianturi A.Md</option>
+        <option>Yeni Yunita</option>
+        <option>Zainuddin Asro</option>
+        <option>Zulpan</option>
+        </select>
+
+        <input type="date" id="tanggal">
+
+        <button onclick="ambilLokasi()">Ambil Lokasi</button>
+        <p id="lokasiInfo"></p>
+
+        <p id="error"></p>
+
+        <button onclick="submitData()">Submit</button>
+    </div>
+
+<script>
+let kegiatanDipilih = "";
+let lokasiUser = null;
+const targetLat = -0.321924;
+const targetLng = 103.1611923;
+
+function selectActivity(kegiatan) {
+    kegiatanDipilih = kegiatan;
+    document.getElementById('judulForm').innerText = "Form " + kegiatan;
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('formContainer').style.display = 'block';
+}
+
+function ambilLokasi() {
+    if (!navigator.geolocation) {
+        alert("Browser tidak mendukung geolocation");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+        lokasiUser = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+        };
+
+        const jarak = hitungJarak(lokasiUser.lat, lokasiUser.lng, targetLat, targetLng);
+
+        document.getElementById('lokasiInfo').innerText =`Lokasi diterima (Jarak: ${jarak.toFixed(3)} km)`;
+        lokasiUser.jarak = jarak;   // simpan agar bisa dikirim
+
+    }, err => {
+        alert("Gagal mengambil lokasi");
+    });
+}
+
+function hitungJarak(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2-lat1) * Math.PI/180;
+    const dLon = (lon2-lon1) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function submitData() {
+    if (!lokasiUser) {
+        alert("Lokasi belum valid");
+        return;
+    }
+
+    const nama = document.getElementById('nama').value;
+    const tanggal = document.getElementById('tanggal').value;
+    
+    if (tanggal === "") {
+    alert("Tanggal wajib diisi!");
+    return;
+    }
+       
+    const waktuSubmit = new Date().toLocaleString();
+
+    const data = {
+        TanggalSubmit: waktuSubmit,
+        Kegiatan: kegiatanDipilih,
+        Nama: nama,
+        TanggalKegiatan: tanggal,
+        Jarak: lokasiUser.jarak,
+        Lokasi: `${lokasiUser.lat},${lokasiUser.lng}`
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycby7we99B1518W7w2ZWx9Pnm1CEECzLE7-1U1vErn15McDqLdUI6R434mpV9mFVDvcVd/exec", {  // ganti dengan URL Google Apps Script
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    alert("Data berhasil dikirim!");
+    location.reload();
+}
+</script>
+</body>
+</html>
