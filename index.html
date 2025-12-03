@@ -68,36 +68,6 @@
         <h3 id="judulForm"></h3>
         <select id="nama">
         <option value="">Pilih Pegawai</option>
-        <option>Zulyadi SST, MT</option>
-        <option>Adi Wijaya, SST</option>
-        <option>Agung Nugraha Marwan, S.Tr.Stat</option>
-        <option>Amy Fatmaya Hutami, S.Si</option>
-        <option>Anas Rulloh Budi Alamsyah, S.Tr.Stat</option>
-        <option>Annisa Fitriyani, S.Tr.Stat</option>
-        <option>Anto Beryandari S.P</option>
-        <option>Ari Mahendra, S.Tr.Stat</option>
-        <option>Baitul Jamhuri, SE</option>
-        <option>Berkah Fajar, S.Si</option>
-        <option>Budi Taufik</option>
-        <option>Desi Rizaldi</option>
-        <option>Eka Kusuma Wardani, SST</option>
-        <option>Friska Aprilia Barus A.Md.T.</option>
-        <option>Helen Fricylya Br Tobing S.Tr.Stat.</option>
-        <option>Hendra Sudirman, SE</option>
-        <option>Kamal Maulana Alfi S.Tr.Stat.</option>
-        <option>Mailiza, S.E</option>
-        <option>Mayliandra</option>
-        <option>Muhammad Mishbahi Nur Ihsan S.Tr.Stat.</option>
-        <option>Murniati S.Si.</option>
-        <option>Nata Lesmana</option>
-        <option>Nurmaliza</option>
-        <option>Riyhanza Agussalam, SE</option>
-        <option>Ryan Alfitra, SST</option>
-        <option>Sishilia Marestha, S.Tr.Stat</option>
-        <option>Theresia Alvionita Sianturi A.Md</option>
-        <option>Yeni Yunita</option>
-        <option>Zainuddin Asro</option>
-        <option>Zulpan</option>
         </select>
 
         <input type="date" id="tanggal">
@@ -119,11 +89,70 @@ let lokasiUser = null;
 function selectActivity(activity) {
     kegiatanDipilih = activity;
 
-    document.getElementById("judulForm").innerText = "Kegiatan: " + activity;
+    document.getElementById('judulForm').innerText =
+        "Form Daftar Hadir: " + activity;
 
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("formContainer").style.display = "block";
+    document.getElementById('menu').style.display = "none";
+    document.getElementById('formContainer').style.display = "block";
+
+    // Daftar nama lengkap
+    const semuaNama = [
+        "Zulyadi SST, MT",
+        "Adi Wijaya, SST",
+        "Agung Nugraha Marwan, S.Tr.Stat",
+        "Amy Fatmaya Hutami, S.Si",
+        "Anas Rulloh Budi Alamsyah, S.Tr.Stat",
+        "Annisa Fitriyani, S.Tr.Stat",
+        "Anto Beryandari S.P",
+        "Ari Mahendra, S.Tr.Stat",
+        "Baitul Jamhuri, SE",
+        "Berkah Fajar, S.Si",
+        "Budi Taufik",
+        "Dedi Rizaldi",
+        "Eka Kusuma Wardani, SST",
+        "Friska Aprilia Barus A.Md.T.",
+        "Helen Fricylya Br Tobing S.Tr.Stat.",
+        "Hendra Sudirman, SE",
+        "Kamal Maulana Alfi S.Tr.Stat.",
+        "Mailiza, S.E",
+        "Mayliandra",
+        "Muhammad Mishbahi Nur Ihsan S.Tr.Stat.",
+        "Murniati S.Si.",
+        "Nata Lesmana",
+        "Nurmaliza",
+        "Riyhanza Agussalam, SE",
+        "Ryan Alfitra, SST",
+        "Sishilia Marestha, S.Tr.Stat",
+        "Theresia Alvionita Sianturi A.Md",
+        "Yeni Yunita",
+        "Zainuddin Asro",
+        "Zulpan"
+    ];
+
+    // Khusus P3K → 4 nama
+    const namaP3K = [
+        "Yeni Yunita",
+        "Dedi Rizaldi",
+        "Mayliandra",
+        "Nata Lesmana"
+    ];
+
+    const select = document.getElementById("nama");
+
+    // Hapus semua opsi lama
+    select.innerHTML = '<option value="">Pilih Pegawai</option>';
+
+    // Isi ulang sesuai kegiatan
+    const daftar = (activity === "P3K") ? namaP3K : semuaNama;
+
+    daftar.forEach(nama => {
+        const opt = document.createElement("option");
+        opt.value = nama;
+        opt.textContent = nama;
+        select.appendChild(opt);
+    });
 }
+
 
 
 function ambilLokasi() {
