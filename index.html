@@ -79,7 +79,7 @@
         <option>Baitul Jamhuri, SE</option>
         <option>Berkah Fajar, S.Si</option>
         <option>Budi Taufik</option>
-        <option>Dedi Rizaldi</option>
+        <option>Desi Rizaldi</option>
         <option>Eka Kusuma Wardani, SST</option>
         <option>Friska Aprilia Barus A.Md.T.</option>
         <option>Helen Fricylya Br Tobing S.Tr.Stat.</option>
@@ -144,12 +144,12 @@ function ambilLokasi() {
         lokasiUser.jarak = jarak;
 
         // ❌ Jika jarak terlalu jauh (>5 km)
-        if (jarak > 5) {
+        if (jarak > 0.5) {
             lokasiUser.valid = false; // tandai TIDAK valid
             document.getElementById("lokasiInfo").innerText =
                 `Lokasi terlalu jauh (${jarak.toFixed(2)} km). Tidak bisa disimpan.`;
 
-            alert("Anda di luar jangkauan (lebih dari 5 km). Tidak bisa mengisi daftar hadir.");
+            alert("Anda di luar jangkauan (lebih dari 500 m). Tidak bisa mengisi daftar hadir.");
             return;
         }
 
@@ -187,7 +187,7 @@ function submitData() {
     }
 
     if (lokasiUser.valid !== true) {
-        alert("Lokasi tidak valid! Anda berada di luar radius 5 km.");
+        alert("Lokasi tidak valid! Anda berada di luar radius 500 m.");
         return;
     }
 
